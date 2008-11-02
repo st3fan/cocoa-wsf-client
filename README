@@ -3,3 +3,39 @@ Foundation framework. See http://code.google.com/p/polarrose-wsf/
 
 This README will be updated when the project is more stable.
 
+*Dependencies*
+
+This code requires the Cocoa JSON framework from:
+
+  http://code.google.com/p/json-framework/
+
+*Example*
+
+The following example makes a call to the SayHello action from the
+wsf-examples project.
+
+- (void) demo
+{
+   NSURL* endointUrl =  [NSURL URLWithString: @"http://localhost:8080/public/api"];
+
+   WSFRequest* request = [WSFRequest requestWithEndpointURL: endpointURL
+     version: @"2008-06-27" action: @"SayHello"
+     parameters: [NSDictionary dictionaryWithObject: @"Stefan" forKey: @"Name"]];
+
+   [[WSFClient clientWithRequest: request delegate: self] retain];
+}
+
+- (void) client: (WSFClient*) client didFailWithError: (NSError*) error
+{
+   NSLog(@"Client %@ failed with error %@", client, error);
+}
+
+- (void) client: (WSFClient*) client didReceiveResponse: (WSFResponse*) response
+{
+   NSLog(@"Client %@ received response %@", client, [response data]);
+}
+
+- (void) client: (WSFClient*) client didReceiveErrorResponse: (WSFErrorResponse*) errorResponse;
+{
+   NSLog(@"Client %@ did receive error response %@", client, errorResponse);
+}
