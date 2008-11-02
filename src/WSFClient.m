@@ -21,8 +21,9 @@
 #import "WSFRequest.h"
 #import "WSFResponse.h"
 #import "WSFError.h"
+#import "WSFErrorResponse.h"
 
-#import "JSON/NSString+SBJSON.h"
+#import "NSString+SBJSON.h"
 
 @implementation WSFClient
 
@@ -34,7 +35,6 @@
 - (id) initWithRequest: (WSFRequest*) request delegate: (id) delegate
 {
    if ((self = [super init]) != nil) {
-      debug_ = YES;
       request_ = [request retain];
       delegate_ = [delegate retain];
       json_ = [[NSMutableData data] retain];
@@ -46,7 +46,6 @@
 - (id) initWithRequest: (WSFRequest*) request delegate: (id) delegate startImmediately: (BOOL) startImmediately
 {
    if ((self = [super init]) != nil) {
-      debug_ = YES;
       request_ = request;
       delegate_ = delegate;
       json_ = [[NSMutableData data] retain];
@@ -86,43 +85,45 @@
 
 - (void) connection: (NSURLConnection*) connection didReceiveResponse: (NSURLResponse*) response
 {
-   if (debug_) {
+#if defined(WSFCLIENT_DEBUG)
       NSLog(@"connection: %@ didReceiveResponse: %@", connection, response);
-   }
+#endif
 
    [json_ setLength: 0];
 }
 
 - (void) connection: (NSURLConnection*) connection didReceiveData: (NSData*) data
 {
-   if (debug_) {
+#if defined(WSFCLIENT_DEBUG)
       NSLog(@"connection: %@ didReceiveData: %@", connection, data);
-   }
+#endif
    
    [json_ appendData: data];
 }
 
 - (void) connectionDidFinishLoading: (NSURLConnection*) connection
 {
-   if (debug_) {
+#if defined(WSFCLIENT_DEBUG)
       NSLog(@"connectionDidFinishLoading: %@", connection);
-   }
+#endif
    
    NSString* json = [[[NSString alloc] initWithData: json_ encoding: NSUTF8StringEncoding] autorelease];
    NSLog(@"JSON = %@", json);
    NSDictionary* data = [json JSONValue];
    
    if ([data objectForKey: @"errors"]) {
-      if ([delegate_ respondsToSelector: @selector(client:didReceiveErrors:)]) {
+      if ([delegate_ respondsToSelector: @selector(client:didReceiveErrorResponse:)]) {
          NSMutableArray* errors = [NSMutableArray array];
          for (NSDictionary* error in [data objectForKey: @"errors"]) {
             [errors addObject: [WSFError errorWithCode: [[error objectForKey: @"code"] intValue] message: [error objectForKey: @"description"]]];
          }
+         WSFErrorResponse* errorResponse = [[WSFErrorResponse alloc] initWithRequestId: [data objectForKey: @"webServiceCallId"] errors: errors];
          @try {
-            [delegate_ client: self didReceiveErrors: errors];
-         }
-         @finally {
-            [errors release];
+            [delegate_ client: self didReceiveErrorResponse: errorResponse];
+         } @catch (id e) {
+            NSLog(@"WSFClient %@ ignored exception thrown from delegate's client:didReceiveErrorResponse: %@", e);
+         } @finally {
+            [errorResponse release];
          }
       }
    } else if ([data objectForKey: @"response"]) {
@@ -130,8 +131,9 @@
          WSFResponse* response = [[WSFResponse alloc] initWithRequestId: [data objectForKey: @"webServiceCallId"] data: [data objectForKey: @"response"]];
          @try {
             [delegate_ client: self didReceiveResponse: response];
-         }
-         @finally {
+         } @catch (id e) {
+            NSLog(@"WSFClient %@ ignored exception thrown from delegate's client:didReceiveResponse: %@", e);
+         } @finally {
             [response release];
          }
       }
@@ -140,12 +142,16 @@
 
 - (void) connection: (NSURLConnection*) connection didFailWithError: (NSError*) error
 {
-   if (debug_) {
+#if defined(WSFCLIENT_DEBUG)
       NSLog(@"connection: %@ didFailWithError: %@", connection, error);
-   }
+#endif
    
    if ([delegate_ respondsToSelector: @selector(client:didFailWithError:)]) {
-      [delegate_ client: self didFailWithError: error];
+      @try {
+         [delegate_ client: self didFailWithError: error];
+      } @catch (id e) {
+         NSLog(@"WSFClient %@ ignored exception thrown from delegate's client:didFailWithError: %@", e);
+      }
    }
 }
 

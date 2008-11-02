@@ -28,7 +28,6 @@
    NSURLConnection* connection_;
    id delegate_;
    NSMutableData* json_;
-   BOOL debug_;
 }
 
 + (id) sendSynchronousRequest: (WSFRequest*) request returningResponse: (WSFResponse*) response error: (NSError**) error;
