@@ -26,7 +26,7 @@
 
 - (id) initWithRequestId: (NSString*) requestId errors: (NSArray*) errors;
 
-+ (id) errorWithRequestId: (NSString*) requestId errors: (NSArray*) errors;
++ (id) errorResponseWithRequestId: (NSString*) requestId errors: (NSArray*) errors;
 
 - (NSArray*) errors;
 - (NSString*) requestId;
