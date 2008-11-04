@@ -27,11 +27,6 @@
 
 @implementation WSFClient
 
-+ (id) sendSynchronousRequest: (WSFRequest*) request returningResponse: (WSFResponse*) response error: (NSError**) error
-{
-   return nil;
-}
-
 - (id) initWithRequest: (WSFRequest*) request delegate: (id) delegate
 {
    if ((self = [super init]) != nil) {

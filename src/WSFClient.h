@@ -30,8 +30,6 @@
    NSMutableData* json_;
 }
 
-+ (id) sendSynchronousRequest: (WSFRequest*) request returningResponse: (WSFResponse*) response error: (NSError**) error;
-
 - (id) initWithRequest: (WSFRequest*) request delegate: (id) delegate;
 - (id) initWithRequest: (WSFRequest*) request delegate: (id) delegate startImmediately: (BOOL) startImmediately;
 - (void) start;
