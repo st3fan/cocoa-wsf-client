@@ -17,10 +17,12 @@
  * limitations under the License.
  */
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
+#import "WSFAccount.h"
 
 @interface WSFRequest : NSObject {
    NSURL* endpointURL_;
+   WSFAccount* account_;
    NSString* version_;
    NSString* action_;
    NSDictionary* parameters_;
@@ -32,6 +34,12 @@
 
 + (id) requestWithEndpointURL: (NSURL*) endpointURL version: (NSString*) version action: (NSString*) action;
 + (id) requestWithEndpointURL: (NSURL*) endpointURL version: (NSString*) version action: (NSString*) action parameters: (NSDictionary*) parameters;
+
+- (id) initWithEndpointURL: (NSURL*) endpointURL account: (WSFAccount*) account version: (NSString*) version action: (NSString*) action;
+- (id) initWithEndpointURL: (NSURL*) endpointURL account: (WSFAccount*) account version: (NSString*) version action: (NSString*) action parameters: (NSDictionary*) parameters;
+
++ (id) requestWithEndpointURL: (NSURL*) endpointURL account: (WSFAccount*) account version: (NSString*) version action: (NSString*) action;
++ (id) requestWithEndpointURL: (NSURL*) endpointURL account: (WSFAccount*) account version: (NSString*) version action: (NSString*) action parameters: (NSDictionary*) parameters;
 
 - (NSURL*) endpointURL;
 - (NSString*) version;

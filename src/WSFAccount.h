@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 @interface WSFAccount : NSObject {
    NSString* accessKey_;

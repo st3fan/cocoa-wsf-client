@@ -108,7 +108,6 @@
 #endif
    
    NSString* json = [[[NSString alloc] initWithData: json_ encoding: NSUTF8StringEncoding] autorelease];
-   NSLog(@"JSON = %@", json);
    NSDictionary* data = [json JSONValue];
    
    if ([data objectForKey: @"errors"]) {

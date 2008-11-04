@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 @interface WSFErrorResponse : NSObject {
    NSString* requestId_;
